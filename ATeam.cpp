@@ -20,6 +20,7 @@ using namespace std;
 // Output
 // Print a single integer — the number of problems the friends will implement on the contest.
 
+// O(3*n)
 int main(){
     int n;
     cin >> n;
