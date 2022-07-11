@@ -22,7 +22,9 @@ using namespace std;
 // Output one number — the maximal number of dominoes, which can be placed.
 
 int main(){
-    
+    int m, n;
+    cin >> m >> n;
+    cout << ((m*n)/2);
 
     return 0;
 }
