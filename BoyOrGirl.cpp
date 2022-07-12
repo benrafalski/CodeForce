@@ -28,7 +28,7 @@ using namespace std;
 int main(){
     char str[101];
     cin >> str;
-    int len = strlen(str), dupes = 0, found = 0;
+    int len = strlen(str), dupes = 0;
     for(int i = 0; i < len; ++i){
         bool found = true;
         for(int j = i + 1; j < len; ++j){
