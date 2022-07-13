@@ -97,25 +97,25 @@ void filter(int x, int k, int *pockets, int n){
         t = t->next;
     }
 
-    Cell list[100000];
-    for(int i = 0; i < 100000; ++i){
-        list[i].value = i;
-        list[i].pocket = false;
-    }
-    for(int i = 0; i < n; ++i){
-        list[pockets[i]].pocket = true;
-    }
-    for(int i = 0; i < k; ++i){
-        for(int j = 0; j < 100000; ++j){
-            if(list->pocket){
-                
-            }
-        }
-    }
+    // Cell list[100000];
+    // for(int i = 0; i < 100000; ++i){
+    //     list[i].value = i;
+    //     list[i].pocket = false;
+    // }
+    // for(int i = 0; i < n; ++i){
+    //     list[pockets[i]].pocket = true;
+    // }
+    // for(int i = 0; i < k; ++i){
+    //     for(int j = 0; j < 100000; ++j){
+    //         if(list->pocket){
+    //         }
+    //     }
+    // }
 }
 
 
 int main(){
+
     int n, m, i=0;
     cin >> n >> m;
     int pockets[n];
