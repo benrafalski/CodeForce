@@ -3,7 +3,7 @@
 using namespace std;
 
 #define ll long long
-#define N (int)10e5
+#define MAX (ll)10e9
 
 int main(){
     ios::sync_with_stdio(0);
