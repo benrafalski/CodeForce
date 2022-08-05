@@ -28,17 +28,20 @@ int main(){
     for (int i =0;i<t;++i){
         int n;
         cin >> n;
-        int a[n];
+        ll a[n];
+        ll b[n];
+        memset(a, 0, sizeof(a));
+        memset(b, 0, sizeof(b));
+        ll count = 0;
         for(int j=0;j<n;++j){
-            cin >> a[n];
+            ll in;
+            cin >> in;
+            if(in-j>=0)a[in-j]++;
+            else b[abs(in-j)]++;
         }
-        int count = 0;
-        for(int j=0;j<n-1;++j){
-            for(int k=j;k<n;k++){
-                if(k-j==a[k]-a[j]){
-                    count++;
-                }
-            }
+        for(int j=0;j<n;++j){
+            count += ((a[j]*(a[j]-1))/2);
+            count += ((b[j]*(b[j]-1))/2);
         }
 
         cout << count << "\n";
