@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-
 #define ll long long
 #define ull unsigned long long
 #define int64 uint64_t // 10^19
@@ -12,10 +11,16 @@ using namespace std;
 #define FOR(t) while(t-- > 0)
 #define EACH(x,a) for(auto&x:a)
 
+
+
+
+
 int main(){
     ios::sync_with_stdio(0);
     cin.tie(0);
 
+
+    
 
 
     return 0;
