@@ -1,14 +1,13 @@
 #include <bits/stdc++.h>
 
+// uint64_t // 10^19
+// uint32_t // 4*10^9
+// uint16_t // 6*10^4
+// uint8_t // 2*10^2
+
 using namespace std;
 
 #define ll long long
-#define ull unsigned long long
-#define int64 uint64_t // 10^19
-#define int32 uint32_t // 4*10^9
-#define int16 uint16_t // 6*10^4
-#define int8 uint8_t // 2*10^2
-#define MAX (ull)10e12
 #define FOR(t) while(t-- > 0)
 #define EACH(x,a) for(auto&x:a)
 
