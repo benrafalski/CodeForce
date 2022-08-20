@@ -1,0 +1,30 @@
+genisoimage --help 2>&1 | grep FILE
+
+// this func will be ran first when exe is ran
+--attribute__((constructor))
+int func(){
+    ...
+}
+
+
+
+
+// linux permissions
+// all users have a uid and gid
+// all files are owned by a user and group
+    // ls -l /bin/cat
+    // -rwxr-xr-x 1 root root 43416 Sep 5 2019 /bin/cat
+                    user group
+    // - 
+    // rwx(root user can do all this) 
+    // -xr(root group can do this) 
+    // -x (other global users)
+// uid=0 is root, need to be root to make changes
+// srwxsrwxsrwx ->
+    // (SUID)(UserRead)(UserWrite)(UserExec)(SGID)(GroupRead)(GroupWrite)(GroupExec)(Sticky)(WorldRead)(WorkdWrite)(WorldExec)
+    // SUID: execute with the eUID of the file owner, not the process 
+    // SGID: execute with the eGID of the file owner, not the process 
+    // Sticky: only allows users in a shared directory to remove this file if they made it
+// eUID: used for access control checks
+// UID/GID: real ID if the process owner
+// saved: UID/GID that your process could switch its eID to
