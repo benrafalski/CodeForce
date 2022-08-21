@@ -1,4 +1,4 @@
-genisoimage --help 2>&1 | grep FILE
+CMD --help 2>&1 | grep FILE
 
 // this func will be ran first when exe is ran
 --attribute__((constructor))
@@ -28,3 +28,12 @@ int func(){
 // eUID: used for access control checks
 // UID/GID: real ID if the process owner
 // saved: UID/GID that your process could switch its eID to
+// root/UID:0 can open any file, execute any program, assume any other UID/GID, debug any program
+// privlege escalation: expliot where attacker gains root privlege
+
+// Mitigation
+// Command Injection exploits hijack /bin/sh -p
+// If /bin/sh is ran using SUID (eUID=0 + rUID!=0), it will drop the privleges to the rUID...
+// using "sh -p" allows SUID to keep the eUID privlage escalation
+// Wireshark: network traffic sniffer
+// Sandboxing: wall off a program from anything sensitive
