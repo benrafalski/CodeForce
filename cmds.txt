@@ -9,15 +9,15 @@
 /usr/bin/nano
 /usr/bin/rev
 /usr/bin/od
+/usr/bin/hd
 /usr/bin/xxd
-/usr/bin/
-/usr/bin/
-/usr/bin/
-/usr/bin/
-/usr/bin/
-/usr/bin/
-/usr/bin/
-/usr/bin/
+/usr/bin/base32
+/usr/bin/base64
+/usr/bin/split
+/usr/bin/gzip
+/usr/bin/bzip2
+/usr/bin/zip
+/usr/bin/tar
 /usr/bin/ar
 /usr/bin/cpio
 

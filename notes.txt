@@ -6,7 +6,7 @@ int func(){
     ...
 }
 
-
+stdin, stdout, and stderr are 0, 1, and 2
 
 
 // linux permissions

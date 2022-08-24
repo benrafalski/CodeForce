@@ -16,7 +16,10 @@ int main(){
     cin.tie(0);
 
 
-    cout << "hfdaophfioaphgpa;hgp;a\n";
+    // cout << "hfdaophfioaphgpa;hgp;a\n";
+    for(int i =0;i <165; ++i){
+        cout << "\'" << i << "\'" << ":" << "\'" << i << "\'" << ",";
+    }
 
 
     return 0;
