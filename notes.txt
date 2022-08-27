@@ -37,3 +37,239 @@ stdin, stdout, and stderr are 0, 1, and 2
 // using "sh -p" allows SUID to keep the eUID privlage escalation
 // Wireshark: network traffic sniffer
 // Sandboxing: wall off a program from anything sensitive
+
+// program interaction
+// command line = shell
+// linux file system starts at / 'root' and there is a tree of directories under it
+    // /usr -> all file systems
+    // /usr/bin -> exe files for all programs on computer
+    // /usr/lib -> shared libraries
+    // /etc -> system configs
+    // /var -> logs, caches
+    // /home -> user data
+    // /proc -> runtime process data
+    // /tmp -> temporary data
+// directories -> hold files
+// pwd -> print working directory
+    // absolute paths -> start with '/' or from root
+    // relative paths -> relative to the cwd
+    // './' -> signifys current directory
+    // '../' -> signifies the directory above the cwd
+// enviornment variables -> key:value pair for a program when it is launched
+    // output enviornment vars using 'env' command
+    // PATH: list of dirs to search for program in
+    // PWD: the cwd
+    // HOME: path to home dir
+    // HOSTNAME: name of the system "user@system $" in shell
+// file types -> see using 'ls -ld'
+    // - : regular file
+    // d : directory
+    // l : symbolic link
+    // p : named-pipe/fifo
+    // c : char device file
+    // b : block device file
+    // s : unix socket
+// symbolic links -> 'ln -s' to make owned
+    // references to another file/dir on the system
+    // links to relative paths are still relative paths!    
+    // hard links: identical copy of the file you are referencing
+// Pipes -> output of first program is the input to the second program
+    // fifos: named pipes, first data to come in is the first out
+// I/O redirection 
+    // < infile
+    // > outfile -> overwrite
+    // >> outfile -> append
+    // 2>errfile -> overwrite
+    // 2>>errfile -> append
+
+
+// ----Fundamentals----
+// ELF file: executable and linkable format
+    // binary file format
+    // contains the data for the program
+    // describe how program should be loaded
+    // contains metadata describing program components
+
+    // ELF program headers: define segments of the loaded memory 
+        // INTERP: defines the library that should be used to load the elf into memory
+        // LOAD: defines the part of the file that should be loaded into memory
+        // headers are the source of info used when loading a file
+
+    // ELF section headers: has semantic information, less important for loading
+        // .text: executable code of program
+        // .plt/.got: resolves dispatcch lobrary calls
+        // .data: pre-initialized global writable data
+        // .rodata: global read-only data
+        // .bss: uninitialized global writable data
+        // section headers are optional, technically metadata
+    
+    // Symbols -> names used to find the dynamically loaded libraries
+        // resolves function calls to these linked libraries
+    
+    // Interaction
+        // gcc -> make elf
+        // readelf -> parse elf header
+        // objdump -> parse elf header + disassemble source code
+        // nm -> view elf Symbols
+        // patchelf -> change some elf properties
+        // objcopy -> swap out elf sections
+        // strip -> remove information such as Symbols
+        // kiatai struct -> look thru elf interactively
+
+// Linux process
+    // Process has a state, priority, parent/sibling/children, shared resources, virtual memory space, security context
+    // Processes are like mitosis
+    // fork() and clone() copy a current process
+        // new process knows it is the child
+        // using execve() the child can replace itself
+    // Kernel loading
+        // kernel knows what to load based on the start of the file
+            // 1. #! means the file is a script and extracts the interpreter from this line (eg: python)
+            // 2. if file matches format in /proc/sys/fs/binfmt_misc and matches to an interpreter in that file
+            // 3. file is a dynamically linked (has libraries) elf, kernel reads loader/interpreter defined in the elf + lets it take control
+            // 4. file is staticlly linked elf, kernel will load it
+    // ELF loading process
+        // 1. program + interpreter are loaded to kernel
+        // 2. interpreter locates libraries
+            // env vars: LD_PRELOAD, LD_LIBRARY_PATH, DT_RUNPATH/DT_RPATH
+            // /etc/ld.so.preload, /etc/ld.so.conf(system wide config), /lib and /usr/lib
+        // 3. interpreter loads libraries
+            // these libs my depend on other libs
+            // relocations updated
+
+    // Where does the elf get loaded to?
+        // linux processes have a virtual memory space
+            // contains: binary, libs, heap (dynamic mem), stack (for function local vars), mem specifically mapped by the program, helper regions, kernel code in the 'upper half' of the code (inaccessible to the process)
+            // virtual mem is dedicated to your process
+            // pysical mem is shared among the whole system
+            // /proc/self/maps -> see an entire process's memory space
+
+    // Std C library also calle libc.so
+        // printf, scanf, socket, atoi, malloc, free ...
+
+    // staticlly linked libs -> one step: the binary is loaded
+    
+    // Elf initialization
+        // every elf can set a constructor -> ran before the program is launched
+        // __attribute__((constructor)) void haha(){write(1, "hello world\n", 6);}
+
+    //Program Execution
+        // ELF automatically calls __libc_start_main() in libc -> this is main() and the code is now running
+        // at launch the program only has access to -> loaded libraries, arguments in argv, and env vars in envp
+
+    // Library functions
+        // binary IMPORT symbols are resolved using the libraries EXPORT symbols
+
+    // Interacting during Execution
+        // Syscalls -> program can use these to interact with the outside 
+        // strace -> used to trace system calls for a process
+
+        // Signals -> OS uses these to interact with the program
+        // kill() -> send a signal to a process
+        // signals pause process and invoke a handler
+        // handlers are functions that take the signal number
+        // without a handler a default action is taken (kill)
+        // SIGKILL(9) & SIGSTOP (19) cannot be handled
+
+        // Shared Memory -> can be established Syscalls
+            // Syscalls -> clone(), NOT fork()
+            // /dev/shm -> folder in linux for shared memory
+
+    // Termination
+        // can happen in 2 ways
+            // 1. recieve unhandled signal
+            // 2. calling exit() Syscalls
+        // after Termination
+            // process remains in a zombie state until the parent process wait()s for it
+            // after wait() they will be freed, return value goes to the parent
+            // if the parent dies before wait() is called, they will reparent to PID 1
+
+// Computer Architecture
+    // Logic Gates: fundumental building blocks of a CPU/Memory
+    // CPU: all programs eventually get executed on a CPU
+        // Registers: very small memory units
+        // CU: decides what to execute
+        // ALU: where computations happen
+        // Cache: fast storage that stores items read form the memory
+        // Multi core CPUs: each core had the above and there is another shared cache
+
+// Assembly code
+    // only programming language that interacts with the CPU
+    // Registers: fast/temporary/expensive stores of data
+    // x86: 32bit
+        // general purpose: eax, ecx, edx, ebx, esi, edi
+        // stack pointer: esp 
+        // base pointer: ebp
+        // addr of next instr: eip
+    // amd64: 64bit
+        // general purpose: rax, rcx, rdx, rbx, rsi, rdi, r8, r9, r10, r12, r13, r14, r15
+        // stack pointer: rsp
+        // base pointer: rpb
+        // addr of next instr: rip
+    // Partial access:
+        // *l: lower 16 bits
+        // [a-d]h: higher 16 bits
+        // ax: first 16 bits 
+        // eax: first 32 bits 
+        // rax: all 64 bits
+        // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+        // 0 1 2 3 4 5 6 7 8 9 a  b  c  d  e  f  
+        // MSB                                     LSB
+        // +----------------------------------------+
+        // |                   rax                  |
+        // +--------------------+-------------------+
+        //                      |        eax        |
+        //                      +---------+---------+
+        //                                |   ax    |
+        //                                +----+----+
+        //                                | ah | al |
+        //                                +----+----+
+        // * Quad Word = 8 Bytes = 64 bits
+        // * Double Word = 4 bytes = 32 bits
+        // * Word = 2 bytes = 16 bits
+        // * Byte = 1 byte = 8 bits
+
+    // Instructions: tell the CPU what to do
+        // OPCODE OPERAND, OPERAND 
+        // OPCODE: what to do
+        // OPERANDS: what to do on/with
+        // Data manipulation
+            // mov rax, rbx -> rax=rbx 
+            // mov rax, [rbx+4] -> mem_loc(rbx) + 4
+            // add rax, rbx -> rax += rbx
+            // inc rax or [rax] -> increment rax or mem of rax
+        // Control flow
+            // je/jne, jg/jl, jle/jge, ja/jb, jae/jbe, js/jns, jo/jno, jz/jnz
+        // Syscalls
+            // rdi: value of the syscall number to run
+            // rsi: 
+            // call syscall instruction with no operands
+        // stack
+            // tracks the call stack -> functions that are being ran
+            // stores local variables
+            // provides scratch space to alleviate the Registers
+            // used to pass function arguments 
+            // rsp, rbp: relevant registers 
+            // push/pop: relevant instructions 
+        
+        // Endianess
+            // Litte Endianess: most systems, is stored backwards
+            // 0x100 0x101 0x102 0x103 
+            //  67    45    23    01  <- storing 01234567 
+
+        // Two's compliment: storing if value is pos/neg
+            // (unsigned)b11111111+1 == 255+1 == 0 == b00000000
+            // (signed)b11111111+1 == -1+1 == 0 == b00000000
+
+        // Calling Convenstions 
+            // caller/ callee function agreements on parameter passing
+            // amd64
+                // arguments: rdi, rsi, rdx, rcx, r8, r9
+                // return value: rax
+                // callee saved: rbx, rbp, r12, r13, r14, r15
+
+
+    
+        
+
+
