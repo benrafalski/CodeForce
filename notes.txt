@@ -389,6 +389,59 @@ stdin, stdout, and stderr are 0, 1, and 2
     // JIT: Just in time compilers 
         // generating binary code that is able to be ran
         // JIT spraying: place constants in code to use mprotect()
+
+// ----Sandboxing----
+// chroot 
+    // chroot changes the meaning of / 'root'
+    // sets root to be set to chroot('/tmp/jail') <= not jail
+        // chroot /tmp/jail /bin/bash <= won't work bc /bin/bash doesn't exist anymore
+        // /tmp/jail/busybox -> runs the commands you would like while in jail
+    // effects
+        // changes the meaning of '/' to '/tmp/jail'
+            // /flag becomes /tmp/jail/flag
+        // what it doesn't do
+            // close the resources outside of jail 
+            // cd into the jail 
+    // Use cases:
+        // you can run openat() or execveat() to get the flag since the old resources are still available
+        // use syscalls that have the *at() variant to do whatever you want
+
+// seccomp 
+    // seccomp is a syscall firewall for linux
+    // allows developers to
+        // allow certain syscalls 
+        // disallow certain syscalls 
+        // filter allowed and disallowed syscalls based on argument vars 
+    // Build a sandbox using seccomp -> gcc file.c -lseccomp
+        // scmp_filter_ctx ctx;
+        // ctx = seccomp_init(SCMP_ACT_ALLOW); -> init seccomp, allows all syscalls
+        // seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execve), 0); kill the syscall 'execve'
+        // seccomp_load(ctx); -> applies filter
+        // execl("/bin/cat", "cat", "/flag", 0);
+    // How does it work?
+        // eBPF: extended Berkely Packet Filters
+            // programs that run in the kernel
+            // provable safe VM
+
+// Escaping seccomp 
+    // Permissive Policies
+        // ptrace() -> linux debugging functionality, allows for you to change anything in the system
+        // sendmsg() -> transfer fds between proceses 
+        // prctl() -> lots of stuff
+        // process_vm_write() -> allows direct access to a process memory
+    // Sycall confusion 
+        // syscall number differ for different architechtures (64bit, 32bit)
+        // if seccomp only applies to 64bit then you can just use the syscall in 32 bit mode
+    // Kernel Vulnerabilities
+        //  if the kernel is vulnerable then the process can exploit these Vulnerabilities
+    // Goal is to get the flag 
+        // can get data about the flag using sleep() syscall 
+        // return value can be conveyed using exit() 
+        // getting one bit at a time is all you need 
+    
+    
+    
+
     
 
 
