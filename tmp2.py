@@ -11,5 +11,8 @@ from pwn import *
 # print(len(s))
 
 
-for i in range(0,81):
-        print('nop')
+# for i in range(0,81):
+#         print('nop')
+
+s = 'pwn.college|okr1nOYqhM0V1w_WhPKSKlAFW12.QX5MjMsITNxUzW|'
+print(len(s))

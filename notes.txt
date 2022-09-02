@@ -438,6 +438,52 @@ stdin, stdout, and stderr are 0, 1, and 2
         // can get data about the flag using sleep() syscall 
         // return value can be conveyed using exit() 
         // getting one bit at a time is all you need 
+
+// ----Reverse Engineering----
+// Introduction 
+    // Forward engineering -> design code, code it, compile it, run it 
+    // Forward engineering tools -> IDEs, gcc, strings, strip 
+    // Reverse engineering 
+        // starting from the executable and convert it to source code 
+        // disassemble -> decompile -> lots of thinking -> understand
+
+// Functions and Frames
+    // programs -> consist of modules, functions, variables, blocks, instructions
+    // Modules: libraries of commonly used code segments 
+        // Library code does not need to be reversed 
+    // Functions: well defined goal 
+        // reverse engineer these in isolation then understand how they fit together after 
+        // CFGs -> function graphs, can be used to understand the functions functionality 
+
+        // Stack -> memory region 
+            // local variables are stored on the stack 
+            // the stack grows backwards
+            // push = subtract 8 from rsp, pop add 8 to rsp 
+            // consider push 0x41; push 0x42; push 0x43
+            // _________ 0x00
+            // | stack |  ^
+            // |       |  |
+            // |       |  |
+            // |  0x43 |  |
+            // |  0x42 |  |
+            // |  0x41 |  |
+            // _________ 0xFF
+
+            // Initial layout: stack starts out with env vars and program arguments 
+            // Calling a function:
+                // if function foo() is called, the instruction after foo() is pushed to the stack 
+                // when returning, this instruction is popped back off of the stack so the program can return there 
+                // call/ret instructions automatically do this  
+            // Local Variables: 
+                // rsp (points to the top of the stack)
+                // rbp (points to the bottom of the stack)
+                // function frame setup: save caller's rbp, set rbp = rsp, allocate space on stack (subtract from rsp)
+                // function frame teardown: deallocate stack (set rsp = rbp), restore old rbp 
+                
+
+            
+
+
     
     
     
