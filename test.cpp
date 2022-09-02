@@ -15,11 +15,16 @@ int main(){
     ios::sync_with_stdio(0);
     cin.tie(0);
 
+    string s = 'ôãêøù';
 
+    // f4  e3  ea  f8  f9
+    // nypbc
     // cout << "hfdaophfioaphgpa;hgp;a\n";
-    for(int i =0;i <165; ++i){
-        cout << "\'" << i << "\'" << ":" << "\'" << i << "\'" << ",";
+    for(int i=0;i<5;++i){
+        
+        s[i] = s[i] ^ '\x9a';
     }
+    cout << s;
 
 
     return 0;

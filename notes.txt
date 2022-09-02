@@ -479,7 +479,45 @@ stdin, stdout, and stderr are 0, 1, and 2
                 // rbp (points to the bottom of the stack)
                 // function frame setup: save caller's rbp, set rbp = rsp, allocate space on stack (subtract from rsp)
                 // function frame teardown: deallocate stack (set rsp = rbp), restore old rbp 
-                
+
+// Data Access 
+    // data can be in 
+        // .data: pre-initialized global data 
+        // .rodata: global read only data 
+        // .bss: uninitialized global writable data 
+        // stack: statically allocated local vars 
+        // heap: dynamically allocated variables 
+    // Stack data 
+        // accessing:
+            // 1. push or pop 
+            // 2. rsp/rbp relative accesses 
+            // 3. via reference, mov rdx, rsp; mov [rdx], 0x41;
+    // Data in elf sections: .bss, .rodata, .data 
+        // Load: mov rax, [rip+0x20040]
+        // Store: mov [rip+0x20040], rax 
+        // Reference: lea rax, [rip+0x20040]
+    // Heap Data: pointers stored in mem or on the stack  
+        // mov rax, [rsp]; mov rdx, [rax]
+        // the above gets a pointer off the stack then dereferences the data the pointer points to 
+    // Data structures: type information is lost in the compilation process 
+
+// Static tools: tools to analyze a program when not running 
+    // simple tools: nm, strings, objdump, checksec 
+    // advanced tools: ida, binary ninja, angr managment, ghidra, cutter 
+
+// Dynamic tools: analyze a program at runtime  
+    // ltrace and strace: traces library or system calls
+    // gdb and gdb scripting 
+
+    // GDB: dealing with PIE (position independent exes)
+        // Position dependent exes: loaded at a static addr 
+        // Position independent exes: not loaded statically 
+        // GDB always loads them in at 0x0000555555554000 
+        // in .gdbinit -> set $base = 0x0000555555554000
+        // break *($base+0x1023) -> check using 'info proc map' to find correct base 
+        // 'record' instr in gdb records and allows you to replay instructions 
+
+    
 
             
 
