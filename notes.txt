@@ -517,9 +517,94 @@ stdin, stdout, and stderr are 0, 1, and 2
         // break *($base+0x1023) -> check using 'info proc map' to find correct base 
         // 'record' instr in gdb records and allows you to replay instructions 
 
-    
+//----Memory Errors----
+// Introduction - tldr...C/C++ have a lot of Vulnerabilities
+// High-level problems: 
+    // Buffer Overflow
+        // int a[3] = {1,2,3}; a[10] = 10; // no problem
+    // Mixing data and metadata
+        // char name[10] = "Yan";
+        // name = Y a n \0 \0 \0 \0 \0 \0 \0   
+        // read(0, name, sizeof(name));
+            // NULL bytes in input?
+                // Y\0n_shoshi
+            // no NULL bytes in input?
+                // Yan_shoshi     
+    // initialization and cleanup 
+        // after the program terminates, the memory is left untouched unless you tell it to
+        // char my_variable[10]; -> initial value will be what happened to be in the stack before running the program 
 
-            
+// Smashing the stack - stack overflow
+    // int main(int argc, char **argv, char **envp){
+    //     print_quoted(argv[1]);
+    //     return 0;
+    // }
+    // void print_quoted(char* s){
+    //     printf(quote(s));
+    //     return 0;
+    // }
+    // char * quote(char *s){
+    //     char output[16];
+    //     sprintf(output, "\"%s\"", s);
+    //     return output;
+    // }
+    // Problem? sprintf() function
+        // if attacker enters a large input it will overflow the buffer
+        // bad functions: gets, strcpy, scanf, sprintf
+        // sprintf() does not know how long the input should be: should use snprintf() 
+    // What can be corrupted?
+        // value in mem: used in operations, jumps, etc
+        // read pointer: force program to access arbitrary memory 
+        // write pointer: force program to overwrite arbitrary memory 
+        // code pointer: allow us to redirect execution 
+    // Return pointer overwrites: 
+        // overwritting the return adress of a function during program execution to control what is executed next
+
+// Causes of Corruption
+    // Classic buffer overflow
+        // look for buffer with small size and it is read in using a larger amount allowed 
+    // Signedness mixups
+        // to stop a buffer overflow you first get the size of the string from the user
+        // if you use a signed int to read the size this is a problem 
+        // if(size > 16) exit(1); -> -1 > 16 -> is false but -1 in 2's compliment is 0xfffffff 
+        // cannot enter -1 in gdb...
+            // break read 
+                // commands 
+                    // set $rdx = $rdx & 0xfff
+                    // c 
+                //end  
+    // Integer overflow 
+        // even if someone used an unsigned int there can still be a problem 
+        // you can still enter -1 if someone used an unsigned int if they are adding a NULL terminator to the string 
+// Stack Canaries 
+    // Canaries: miners brought canaries into mines to detect poisnous gases 
+    // In cyber security: they detect stack overflows before they begin 
+    // ***stack smashing detected: Terminating program    
+    // they are very effective 
+        // 1. leak the canary (use another vulnerbility)
+        // 2. brute force the canary 
+        // 3. jump the canary 
+// ASLR
+    // randomizes the layout of the address space
+    // attacker cannot find pointers in the code easily
+
+    // Workarounds:
+        // 1. leak memory adressed using another vulnerablility 
+        // 2. just overwrite the page offest since the program asset pages are aligned, requires some brute forcing 
+        // 3. brute force the memory
+    // Overwriting page offsets 
+        // pages are always aligned to a 0x1000 alignment 
+        // thus, the last 3 nibbles of an address are never changed
+        // disable aslr: pwn.process("./vulnerable_program", aslr=False)
+// Memory Disclosures   
+    // Buffer Overreads: analogouse to buffer overflow 
+        // when you write too much to stdout 
+        // can use this to read stack canaries or aslr addresses 
+    // Termination Problems 
+        // can buffer overflow if there is no null bytes 
+    // uninitialized data 
+        // when you return from a function all your data is left behind 
+    
 
 
     
