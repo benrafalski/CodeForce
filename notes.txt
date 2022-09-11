@@ -604,6 +604,74 @@ stdin, stdout, and stderr are 0, 1, and 2
         // can buffer overflow if there is no null bytes 
     // uninitialized data 
         // when you return from a function all your data is left behind 
+
+// ----Race Conditions----
+// Introducation 
+    // Process arrow of time
+        // initialize() -> check_input() -> do_action() -> check_input() -> do_action() -> check_input() -> do_action() -> terminate()
+        // multipe processes can run at once, these processes can run together and execute in any order
+        // time of check/time of use bug: process enviroment can change during the execution of a program 
+        // Can be exploited by injecting attack during enviornmental weak spot 
+// Races in the filesystem 
+    // exploit a race condition by changing the state of a program while it thinks it is still in the same state 
+
+    // anything can happen between open() and /bin/sh execl()
+    // create a symlink in while(1) loop to catflag file to exploit
+    // int main(int argc, char ** argv){
+    //    int fd = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, 0755);
+    //    write(fd, "!#/bin/sh\necho SAFE\n", 20);
+    //    close(fd);
+    //    execl("/bin/sh", "/bin/sh", argv[1], NULL);
+    // }
+
+    // Example 2: doing same exploit allows you to win much less
+    // int main(int argc, char ** argv){
+    //    int echo_fd = open("/bin/sh", O_RDONLY);
+    //    int fd = open(argv[1], O_WRONLY | O_CREAT, 0755);
+    //    sendfile(fd, echo_fd, 0, 1024*1024);
+    //    close(fd);
+    //    execl(argv[1], argv[1], "SAFE", NULL);
+    // }
+
+    // Opening vulnerability window 
+        // 1. nice: use this to make a program pause more often
+        // 2. path complexity: cat /flag vs. cat /a/b/c/d/e/flag
+            // use a file system maze too using symlinks
+
+// Processes and Threads
+    // operating system runs many processes at once 
+    // each process can have multiple threads 
+        // threads share: virtual mem, fds 
+        // have own: regs, stack, thread id, uid, gid, seccomp rules 
+    // Creating threads 
+        // pthread: used in C to create threads 
+        // clone() syscall: successor to fork() sycacall 
+    // Discrepancies: 
+        // setuid: libc wrapper sets uid of all threads, syscall only sets uid of the caller thread
+        // exit: libc wrapper will call exit_group(), syscall only terminates the caller thread 
+    // Thread Termination
+        // global variables are used with threads
+        // causes the same exploit to occur as the filesystem exploit 
+
+// Races in Memory 
+    // with threads, memory is a shared resource 
+    // global data can be changed after it is checked but before it is used 
+    // prevent data races 
+        // mutex: lock in the code where only one thread can run a portion of code at a time  
+        // pthread_mutex_t lock; 
+    // detect data races: hard to do 
+        // valgrind: helgrind and drd detect data races  
+
+// Signals and Reentrancy
+    // kill(pid_t pid, int sig);
+    // kill -l -> view all the signals 
+    // signal handlers 
+        // handlers run different defualt code for a signal
+        // can't do this for sig kill and sig int
+        // exploit: you can cause a program to divert execution when it gets a signal 
+        // what if signal is handled during critical section? 
+    // Reentrancy
+        // functions that would operate properly even ehwn interrupted with an instance of themselves   
     
 
 
