@@ -671,7 +671,124 @@ stdin, stdout, and stderr are 0, 1, and 2
         // exploit: you can cause a program to divert execution when it gets a signal 
         // what if signal is handled during critical section? 
     // Reentrancy
-        // functions that would operate properly even ehwn interrupted with an instance of themselves   
+        // functions that would operate properly even ehwn interrupted with an instance of themselves 
+
+
+// ---- Kernel Security ----
+// Introducation   
+    // Rings: ring 0 (kernel space), ring 3 (user space)
+    // hlt: shuts cpu computation
+    // in + out instr: interact with hardware
+    // regs:   
+        // cr3: controls the page table to translate virtual to physical address
+        // MSR_LSTAR: defines where the syscall instruction jumps to 
+    // switch rings:
+        // in x86   
+            // 1. kernel boots in ring 0
+                // sets MSR_LSTAR to point to a routine
+            // 2. user can call syscall to interact with the kernel
+                // saves the syscall return value to rcx
+            // 3. kernel calls sysret after syscall is done 
+    // Kernel-User Relationship
+        // userspace has virtual mem at low addresses 
+        // kernel has virtual mem at high addresses - only accessible in ring 0
+// Env setup
+    // need compiler, kernel, userspace filesystem, emulator
+    // debugging  
+        // if kernel is configed with debug symbols and ASLR is off
+        // gdb vmlinux -> ni is broken use si/finish
+        // launch gdb   
+            // gdb linux-5.4/vmlinux
+            // target remote (port num of kernel quemu)
+    // /proc/kallsyms -> prints out all kernel symbols if root 
+// Kernel Modules 
+    // modules are basically kernel libraries 
+    // Module interactions 
+        // system calls -> syscall handlers (not in modern kernels)
+        // interupts -> int3, int1 both can be hooked 
+        // files -> /dev (devices), /proc (process info), /sys (nonprocess info)
+            // use open() syscall to open these files
+            // ioctl() -> syscall that provides a flexible interface 
+                // kernel space : register handler
+                // user space : open() then ioctl()
+    // Driver interaction   
+        // in kernel 
+            // read from userspace, do stuff with info, writes data back to userspace, return to userspace 
+    // Compile modules 
+        // write module -> src/module.c 
+        // add entry in src/Makefile 
+        // ./build.sh
+    // Module loading -> init_module syscall 
+        // add module -> insmod 
+        // list modules -> lsmod
+        // remove module -> rmmod 
+// Privilege escalation 
+    // Kernel memory corruption     
+        // copy_from_user and copy_to_user 
+    // goal: overwrite cred->uid with 0 to become root 
+    // prepare_kernel_cred(NULL) -> gives root access since NULL==0 
+    // run  
+        // commit_cred(prepare_kernel_cred(0));
+// Excaping seccomp 
+    // task_struct->thread_info.flags &= ~(1 << TIF_SECCOMP)
+        // disables/enables seccomp 
+        // can access this struct with the gs register 
+// Memroy Management    
+    // process memory   
+        // binary, libraries, heap/stack, etc. 
+        // physical memory in RAM inside computer 
+    // Virtual memory 
+        // each process has a virtual address in memory 
+        // continuous virtual addresses are not continous in physical mem
+        // all of the non-continuous memory must be tracked 
+        // all these page address values are stored in the page table 
+            // each stores 512 entries, each page has 0x1000 of memory
+        // Page directoies: 512 entries, holds the addresses of the page tables which hold the page addresses 
+        // PDPT: page directory page table, each entry has its own page directory
+        // Page Map Level 4: page directory of 512 PDPTs -> allows 256TB of RAM 
+    // Virtual address 
+        // 0x7fff47d4c123 in binary    
+            // first 9 bits (index into page map)
+            // next 9 index to PDPT 
+            // next 9 bits index to PD 
+            // next 9 bits index into PT 
+            // last 12 bits index to page
+    // Process isolation 
+        // cr3 register: holds the physcial mem location of PML4 
+        // only accessible in ring 0 
+    // Virtual machine isolation
+        // each virtual machine has its own extended PML4 
+    // Hardware support for lookups
+        // all this is super fast with the memory management unit 
+    // Kernel and memory 
+        // phys_to_virt() -> physical to virtual mem 
+        // virt_to_phys() -> virtual to physical mem
+// Kernel Mitigations 
+    // stack canaries 
+    // kASLR
+    // heap/stack are not executable by default 
+    // SMEP/SMAP: prevents kernel executing userspace code 
+        // SMEP: executing userspace mem 
+        // SMAP: accessing userspace mem 
+// Kernelspace shellcode 
+    // syscalls in kernel space shellcode will crash 
+    // solutions?
+        // privlege elevation
+            // commit_creds(prepare_kernel_cred(0))
+        // seccomp escape
+            // current_task_struct->thread_info.flags &= ~(1 << TIF_SECCOMP)
+        // command execution
+            // run_cmd("/path/to/my/command");
+    // must call funtions to do this
+        // kALSR off?
+            // use /proc/kallsyms 
+        // kASLR on?
+            // leak kernel address and calc offset 
+    // exit cleanly -> or you will crash!
+        // make sure to clean stack and return!
+        
+
+            
     
 
 
