@@ -113,3 +113,48 @@ int main(){
     cout << s;
     return 0;
 }
+
+
+// \subsection{MPC-based Federated Learning}
+// Figure~\ref{figure:mpcfl-const} presents the framework of MPC-based Federated Learning.  
+//  \begin{figure*}[h]\centering 
+//  	%\small{
+// 		\framebox{
+// 			\begin{minipage}{0.95\textwidth}
+// 				{\textsc{ Inputs: }}
+// 				\begin{itemize}[noitemsep,nolistsep]
+// 					\item Each client $\client_{i \in [n]}$ has private database $D_i=\{d^{(1)}_i, \ldots, d^{(m)}_i \}$.
+// 					\item  Each cloud server $\server_i$ has no input.
+// 				\end{itemize}
+// 				\medskip
+				
+// 				{\textsc{ Protocol:}}
+// 				\begin{enumerate}[noitemsep,nolistsep]
+// 				\item \textbf{Client NN training on private dataset:} 
+				
+// 				\begin{itemize}
+// 				    \item Each client $\client_i$ begins by computing the first $l$ layers of their respective NN locally, where 1 $\leq$ $l$ $<$ the number of layers in the neural network. 
+// 				    \item The output of the training on the first $n$ layers of the NN results in a new layer $H$. Each $h[i]$ $\in$ $H$ is a node in the layer defined as $g(f({d^{(j)}_i}\sh{W}))$ where \textit{linear function} $f$ is composed with a \textit{non-linear activation function} $g$ and a matrix weight $W$.
+// 				\end{itemize}
+// 				\item \textbf{Distribution of client training output:} 
+				
+// 				\begin{itemize}
+// 				    \item Each client $\client_i$ securely distributes its private training output $H_i$ among two servers $S_1$ and $S_2$. For each output vector $h^{(j)}_i$ $\in$ $H_i$, the $\client_i$ chooses a secret vector $\sh{x^{(j)}_i}_1$ uniformly at random, and computes $\sh{x^{(j)}_i}_2 = h^{(j)}_i - \sh{x^{(j)}_i}_1$. The $\client_i$ sends secret shares $\sh{x^{(j)}_i}_1$ and  $\sh{x^{(j)}_i}_2$ to $S_1$ and $S_2$, respectively. 
+// 				    \item Each server $S_{k \in \{1,2\}}$ 
+// inserts the obtained vector $\sh{x^{(j)}_i}_k$ to the set $X_k$ in order, where $X_{k \in \{1,2\}}$ are initialized as empty.
+// 				\end{itemize}
+// 				\item \textbf{NN training on secret-shared training output:} Given secret-shared NN training output $X_k=\{\sh{x^{(j)}_i}_k \mid i \in [n], j \in [m]\}$,  				
+				
+// 				\begin{itemize}
+// 				    \item Two servers $\server_1$ and $\server_2$ securely compute each node of the remaining layers as $g(f(\sh{x^{(t_i)}})):=g(\sh{x^{(t_i)}} \sh{W})$ where a matrix weight $W$ is also secretly shared between the two servers. 
+// 				    \item The outputs of each node are secretly shared, and then forwarded as inputs to the next layer of the network until all layers have been evaluated in this manner.  
+// 				\end{itemize}
+// 				\item \textbf{NN's parameters decryption:} After the training has reached a predetermined epoch number or accuracy condition the training is concluded. Assume now that the servers obtain the secret-shared NN's parameters $\sh{\theta_d}$. Each server $S_{k\in [2]}$ sends its $\sh{\theta_d}_{k\in [2]}$ to the client $\client_i$ which outputs NN's  parameters by computing $\theta_d \from \sh{\theta_d}_1+\sh{\theta_d}_2$ locally. 
+			
+// 				\end{enumerate}
+// 			\end{minipage}
+// 		}
+// 		\caption{MPC-based Federated Learning Framework}  
+// 		\label{figure:mpcfl-const}
+// %	}
+// \end{figure*}

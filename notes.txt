@@ -786,6 +786,24 @@ stdin, stdout, and stderr are 0, 1, and 2
             // leak kernel address and calc offset 
     // exit cleanly -> or you will crash!
         // make sure to clean stack and return!
+
+// ----Exploitation Scenarios----
+// Introduction
+    // 1. enternal reconnaissance
+    // 2. gain a foothold
+    // 3. internal reconnaissance 
+    // 4. repeat 
+// Hijacking to Shellcode 
+    // gets() -> allows for buffer overflow 
+// Side Effects
+    // Hijacking control flow is not the only exploit you can do 
+    // overwrite if() checks with null bytes 
+// JIT Spray 
+    // Just in time compilation: 
+        // 1. write code, JS/Python/Java 
+        // 2. code is compiled at runtime 
+        // 3. binary code executes very fast 
+        
         
 
             
