@@ -803,6 +803,54 @@ stdin, stdout, and stderr are 0, 1, and 2
         // 1. write code, JS/Python/Java 
         // 2. code is compiled at runtime 
         // 3. binary code executes very fast 
+
+// ----ROP----
+// Intro 
+    // Use code reuse when the stack is not execuatable 
+// Binary Lego 
+    // analogy
+        // int main() {
+        //      char name[16];
+        //      read(0, name, 128);
+        // }
+        // int foo() {
+        //      return open("/flag", 0);
+        // }
+        // int bar() {
+        //      int x = open("/notflag", 0);
+        //      sendfile(1, x, 0, 1024);
+        // }
+        // 1. overwrite return address in main
+        // 2. execute foo()
+        // 3. after foo() returns execute sendfile()
+    // rop steps
+        // 0. overflow the stack
+        // 1. control the ret addr, you trigger a "gadget"
+        // 2. gadget returns to an address you control
+        // 3. repeat for entire rop chain
+// Techniques
+    // stack fix up gadgets 
+        // pop r12; pop rdi; pop rsi; ret
+        // add rsp, 0x40; ret
+    // common gadgets
+        // ret 
+        // leave; ret
+        // pop reg; ret 
+        // mov rax, reg; ret
+    // storing addresses in registers 
+        // push rsp; pop rax; ret
+        // add rax, rsp; ret
+        // xchg rax, rsp; ret 
+    // stack pivot 
+        // xchg rax, rsp; ret 
+        // pop rsp; ...; ret 
+    // data transfer 
+        // add byte [rcx], al; pop rbp; ret 
+    // find gadgets 
+        // rp++ --unique -r2 -f /vuln_file
+// Complications  
+    // limited gadgets, ASLR, stack canaries 
+
         
         
 
