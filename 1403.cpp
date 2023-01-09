@@ -25,12 +25,6 @@ using namespace std;
 #define FOR(t) while(t-- > 0)
 #define EACH(x,a) for(auto&x:a)
 
-
-typedef struct day {
-    int a;
-    int b;
-}day;
-
 int main(){
     ios::sync_with_stdio(0);
     cin.tie(0);
@@ -38,113 +32,32 @@ int main(){
     int n;
     cin >> n;
 
-    day days[n];
+    pair <int,int> a[n];
 
-    int maxa = 0, maxb = 0, mina = 1000000000;
-    for(int i = 0; i < n; ++i){
-        cin >> days[i].a >> days[i].b;
-        maxa = max(maxa, days[i].a);
-        maxb = max(maxb, days[i].b);
-        mina = min(mina, days[i].a);
+    for(int i=0; i < n; ++i){
+        cin >> a[i].first >> a[i].second;
     }
 
-    if(n == 4996 && days[0].a == 332){
-        // cout << 999412001 << endl;
-        // return 0;
-        // instertion sort
-        int key, keyb, j;
-        for (int i = 1; i < n; i++)
-        {
-            key = days[i].a;
-            keyb = days[i].b;
-            j = i - 1;
 
-            while (j >= 0 && days[j].a > key)
-            {
-                days[j + 1].a = days[j].a;
-                days[j + 1].b = days[j].b;
-                j = j - 1;
-            }
-            days[j + 1].a = key;
-            days[j + 1].b = keyb;
-        }
-
-        // a array is sorted
-        // if b array is out of order then print max a array
-        // else print max b array
-
-        bool printmaxa = false;
-        for(int i = 0; i < n - 1; ++i){
-            if(days[i].b > days[i+1].b){
-                
-                printmaxa = true;
-                break;
-            }
-        }
-
-        if(printmaxa){
-            if(mina == maxa){
-                
-                cout << maxb << "\n";
-            }else{
-                cout << maxb;
-                cout << maxa << "\n";
-            }
-            
-        }else{
-            cout << maxb << "\n";
-        }
-    }else{
-        // instertion sort
-        int key, keyb, j;
-        for (int i = 1; i < n; i++)
-        {
-            key = days[i].a;
-            keyb = days[i].b;
-            j = i - 1;
-
-            while (j >= 0 && days[j].a > key)
-            {
-                days[j + 1].a = days[j].a;
-                days[j + 1].b = days[j].b;
-                j = j - 1;
-            }
-            days[j + 1].a = key;
-            days[j + 1].b = keyb;
-        }
-
-        // a array is sorted
-        // if b array is out of order then print max a array
-        // else print max b array
-
-        bool printmaxa = false;
-        for(int i = 0; i < n - 1; ++i){
-            if(days[i].b > days[i+1].b){
-                printmaxa = true;
-                break;
-            }
-        }
-
-        // 1 3
-        // 2 2 
-        // 1000 999
-
-        if(printmaxa){
-            if(mina == maxa){
-                cout << maxb << "\n";
-            }else{
-                cout << maxa << "\n";
-            }
-            
-        }else{
-            cout << maxb << "\n";
+    sort(a, a+n);
+    int best = -1;
+    for(int i = 0; i < n; i++) {
+        if (best <= a[i].second) {
+            best = a[i].second;
+        } else {
+            best = a[i].first;
         }
     }
 
-    
-
-
-
-
+    cout << best << "\n";
     return 0;
+
 }
+
+
+
+
+
+
+
+
