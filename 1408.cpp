@@ -21,66 +21,15 @@ int main(){
     int n;
     cin >> n;
 
-    int num;
-    cin >> num;
+    string ch[10]={"","","2","3","223","5","53","7","7222","7332"};
 
-    vector<int> a;
-    for(int i = 0; i < n; ++i){
-        int val = num%10;
-        num /= 10; 
+    string str,an;
+    cin>>str;
+    for(int i =0; i < str.size(); i++) an+=ch[str[i]-'0'];
 
-        switch(val){
-            case 2:
-                a.push_back(2);
-                break;
-            case 3:
-                a.push_back(3);
-                break;
-            case 4:
-                a.push_back(3);
-                a.push_back(2);
-                a.push_back(2);
-                break;
-            case 5:
-                a.push_back(5);
-                break;
-            case 6:
-                a.push_back(5);
-                a.push_back(3);
-                break;
-            case 7:
-                a.push_back(7);
-                break;
-            case 8:
-                a.push_back(7);
-                a.push_back(2);
-                a.push_back(2);
-                a.push_back(2);
-                break;
-            case 9:
-                a.push_back(7);
-                a.push_back(3);
-                a.push_back(3);
-                a.push_back(2);
-                break;
-            default: 
-                a.push_back(-1);
-                break;
-        }
-
-
-    }
-
-
-    sort(a.begin(), a.end());
-    reverse(a.begin(), a.end());
-
-    for(auto it : a){
-        if(it != -1) cout << it;
-    }
-
-
-
+    sort(an.begin(), an.end());
+    reverse(an.begin(), an.end());
+    cout<<an<<endl;
 
     return 0;
 }
